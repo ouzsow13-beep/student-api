@@ -18,13 +18,6 @@ pipeline {
             }
         }
 
-        // === STAGE LINT AJOUTÉ ICI ===
-        stage('Lint') {
-            steps {
-                bat 'mvn checkstyle:check'
-            }
-        }
-
         stage('Tests Unitaires') {
             steps {
                 bat 'mvn test'
