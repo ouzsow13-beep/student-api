@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'Maven-3.9'
-        jdk   'JDK-17'
+        jdk   'JDK-21'
     }
     stages {
         stage('Checkout') {
@@ -11,11 +11,20 @@ pipeline {
                 echo "Build #${env.BUILD_NUMBER} | Branche : ${env.BRANCH_NAME}"
             }
         }
+
         stage('Build') {
             steps {
                 bat 'mvn clean package -DskipTests'
             }
         }
+
+        // === STAGE LINT AJOUTÉ ICI ===
+        stage('Lint') {
+            steps {
+                bat 'mvn checkstyle:check'
+            }
+        }
+
         stage('Tests Unitaires') {
             steps {
                 bat 'mvn test'
@@ -26,6 +35,7 @@ pipeline {
                 }
             }
         }
+
         stage('Couverture') {
             steps {
                 bat 'mvn verify'
@@ -40,6 +50,7 @@ pipeline {
                 }
             }
         }
+
         stage('Archivage') {
             steps {
                 archiveArtifacts artifacts:    'target/*.jar',
@@ -48,7 +59,7 @@ pipeline {
         }
     }
     post {
-        success { echo 'Pipeline reussi avec succes !'         }
+        success { echo 'Pipeline reussi avec succes !' }
         failure { echo 'Pipeline echoue -- consultez les logs.' }
     }
 }
